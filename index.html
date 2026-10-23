@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10151d">
+  <meta name="description" content="TrueSky shader parameter and variable reference documentation.">
+  <title>TrueSky Shader Reference</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0f14;
+      --panel: #111821;
+      --panel-2: #171f2b;
+      --border: #2a3544;
+      --text: #e8edf4;
+      --muted: #9ba9ba;
+      --accent: #75b7ff;
+      --accent-bg: #172d45;
+      --code: #0a1017;
+      --green: #8bd5a7;
+      --yellow: #f0c674;
+      --red: #ff8c8c;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 110px; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--accent); }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11, 15, 20, .94);
+      backdrop-filter: blur(14px);
+    }
+    .topbar-inner { max-width: 1500px; margin: 0 auto; padding: 20px 28px 0; }
+    .eyebrow { color: var(--accent); font-size: 11px; font-weight: 750; letter-spacing: .16em; text-transform: uppercase; }
+    h1.site-title { margin: 3px 0 5px; font-size: clamp(22px, 3vw, 30px); letter-spacing: -.035em; line-height: 1.2; }
+    .subtitle { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+    .tabs { display: flex; gap: 6px; overflow-x: auto; }
+    .tab {
+      position: relative; flex: 0 0 auto; border: 0; border-radius: 8px 8px 0 0;
+      padding: 12px 16px; color: var(--muted); background: transparent;
+      font: inherit; font-weight: 650; cursor: pointer;
+    }
+    .tab:hover { color: var(--text); background: var(--panel); }
+    .tab[aria-selected="true"] { color: var(--text); background: var(--panel-2); }
+    .tab[aria-selected="true"]::after { content: ""; position: absolute; height: 2px; left: 12px; right: 12px; bottom: 0; background: var(--accent); border-radius: 2px; }
+    .shell { max-width: 1500px; margin: 0 auto; padding: 24px 28px 64px; }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 28px; align-items: start; }
+    aside {
+      position: sticky; top: 145px; max-height: calc(100vh - 170px); overflow: auto;
+      padding: 15px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel);
+    }
+    .toc-title { margin: 0 0 10px; color: var(--muted); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    #toc { display: grid; gap: 3px; }
+    #toc a { display: block; padding: 5px 7px; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+    #toc a:hover, #toc a:focus { color: var(--text); background: var(--panel-2); }
+    .article-wrap { min-width: 0; }
+    .doc-meta { display: flex; gap: 10px; align-items: center; margin: 0 0 16px; color: var(--muted); font-size: 12px; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    article {
+      min-width: 0; padding: clamp(20px, 4vw, 42px); border: 1px solid var(--border);
+      border-radius: var(--radius); background: #0f141b; overflow-wrap: anywhere;
+    }
+    article > :first-child { margin-top: 0; }
+    article h1, article h2, article h3, article h4 { color: #f4f7fb; line-height: 1.3; scroll-margin-top: 110px; }
+    article h1 { font-size: clamp(27px, 4vw, 36px); letter-spacing: -.035em; }
+    article h2 { margin-top: 2.1em; padding-bottom: .4em; border-bottom: 1px solid var(--border); font-size: 23px; letter-spacing: -.02em; }
+    article h3 { margin-top: 1.8em; font-size: 18px; }
+    article h4 { font-size: 15px; }
+    article p, article li { color: #d4dce6; }
+    article li { margin: .25em 0; }
+    article blockquote { margin-left: 0; padding: 4px 16px; border-left: 3px solid var(--accent); color: var(--muted); background: var(--panel); }
+    article hr { height: 1px; margin: 28px 0; border: 0; background: var(--border); }
+    article table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; border-spacing: 0; margin: 20px 0; font-size: 13px; }
+    article th, article td { min-width: 85px; padding: 9px 11px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    article th { color: #eef4fb; background: var(--panel-2); font-weight: 700; }
+    article tr:nth-child(even) td { background: rgba(255,255,255,.018); }
+    article code { padding: .15em .35em; border: 1px solid #263342; border-radius: 5px; background: var(--code); color: #b9dcff; font: .9em ui-monospace, SFMono-Regular, Consolas, monospace; }
+    article pre { max-width: 100%; overflow: auto; padding: 16px 18px; border: 1px solid #263342; border-radius: 9px; background: var(--code); line-height: 1.55; }
+    article pre code { padding: 0; border: 0; background: transparent; color: #d3e5f8; font-size: 12.5px; }
+    article img { max-width: 100%; height: auto; }
+    article input[type="checkbox"] { accent-color: var(--accent); }
+    .loading, .error { padding: 24px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); color: var(--muted); }
+    .error { color: var(--red); }
+    .footer { padding: 20px 4px 0; color: var(--muted); font-size: 12px; }
+    .footer a { color: var(--muted); }
+    @media (max-width: 850px) {
+      .topbar-inner { padding: 16px 16px 0; }
+      .shell { padding: 16px 12px 40px; }
+      .layout { grid-template-columns: 1fr; gap: 14px; }
+      aside { position: static; max-height: 180px; }
+      #toc { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      article { padding: 20px 17px; }
+    }
+    @media (max-width: 480px) {
+      .tab { padding: 10px 12px; font-size: 12px; }
+      #toc { grid-template-columns: 1fr; }
+      aside { max-height: 150px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="eyebrow">Technical documentation</div>
+      <h1 class="site-title">TrueSky Shader Reference</h1>
+      <p class="subtitle">Preset parameters, shader mappings, and implementation findings.</p>
+      <nav class="tabs" role="tablist" aria-label="Reference documents">
+        <button class="tab" id="tab-parameters" role="tab" aria-controls="panel" aria-selected="true" data-doc="parameters">SQ Parameters → Shader Reference</button>
+        <button class="tab" id="tab-variables" role="tab" aria-controls="panel" aria-selected="false" data-doc="variables">Shader Variables Status</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell" id="panel" role="tabpanel" aria-labelledby="tab-parameters">
+    <div class="layout">
+      <aside aria-label="Table of contents">
+        <p class="toc-title">On this page</p>
+        <nav id="toc"><span class="subtitle">Loading sections…</span></nav>
+      </aside>
+      <div class="article-wrap">
+        <div class="doc-meta"><span class="dot"></span><span id="doc-label">SQ Parameter → Shader Reference</span><span aria-hidden="true">·</span><span id="doc-status">Loading document…</span></div>
+        <article id="document" aria-live="polite"><div class="loading">Loading Markdown…</div></article>
+        <div class="footer">Markdown source files are kept alongside this page, so updates can be committed without changing the site layout.</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const docs = {
+        parameters: {
+          file: './SQ_PARAMETER_SHADER_REFERENCE.md',
+          label: 'SQ Parameter → Shader Reference',
+          tab: 'tab-parameters'
+        },
+        variables: {
+          file: './SHADER_VARIABLES_REFERENCE.md',
+          label: 'Shader Variables Status',
+          tab: 'tab-variables'
+        }
+      };
+      const cache = new Map();
+      const article = document.getElementById('document');
+      const toc = document.getElementById('toc');
+      const status = document.getElementById('doc-status');
+      const label = document.getElementById('doc-label');
+      const tabs = [...document.querySelectorAll('[data-doc]')];
+      marked.setOptions({ gfm: true, breaks: false });
+
+      function slugify(text) {
+        return text.toLowerCase().trim()
+          .replace(/[`'"“”‘’]/g, '')
+          .replace(/[^\p{L}\p{N}_ -]/gu, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-');
+      }
+
+      function buildToc() {
+        toc.replaceChildren();
+        const headings = [...article.querySelectorAll('h2, h3')];
+        if (!headings.length) {
+          toc.innerHTML = '<span class="subtitle">No sections found.</span>';
+          return;
+        }
+        const used = new Map();
+        for (const heading of headings) {
+          const base = slugify(heading.textContent) || 'section';
+          const count = used.get(base) || 0;
+          used.set(base, count + 1);
+          heading.id = heading.id || (count ? `${base}-${count + 1}` : base);
+          const link = document.createElement('a');
+          link.href = `#${heading.id}`;
+          link.textContent = heading.textContent;
+          if (heading.tagName === 'H3') link.style.paddingLeft = '17px';
+          toc.appendChild(link);
+        }
+      }
+
+      async function loadDoc(key) {
+        const doc = docs[key] || docs.parameters;
+        label.textContent = doc.label;
+        status.textContent = 'Loading document…';
+        article.innerHTML = '<div class="loading">Loading Markdown…</div>';
+        toc.innerHTML = '<span class="subtitle">Building table of contents…</span>';
+        document.getElementById('panel').setAttribute('aria-labelledby', doc.tab);
+        tabs.forEach(tab => {
+          const active = tab.dataset.doc === key;
+          tab.setAttribute('aria-selected', String(active));
+          tab.tabIndex = active ? 0 : -1;
+        });
+
+        try {
+          let markdown = cache.get(key);
+          if (markdown === undefined) {
+            const response = await fetch(doc.file);
+            if (!response.ok) throw new Error(`Could not load ${doc.file} (HTTP ${response.status}).`);
+            markdown = await response.text();
+            cache.set(key, markdown);
+          }
+          article.innerHTML = DOMPurify.sanitize(marked.parse(markdown), { USE_PROFILES: { html: true } });
+          buildToc();
+          status.textContent = `${markdown.split('\n').length.toLocaleString()} lines · Markdown`;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (error) {
+          article.innerHTML = `<div class="error"><strong>Document could not be loaded.</strong><p>${String(error.message || error).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}</p><p>Check that both Markdown files are in the same folder as <code>index.html</code>, and that you opened the site through GitHub Pages or a local web server.</p></div>`;
+          toc.replaceChildren();
+          status.textContent = 'Load failed';
+        }
+      }
+
+      tabs.forEach(tab => tab.addEventListener('click', () => {
+        const key = tab.dataset.doc;
+        const url = new URL(window.location.href);
+        url.searchParams.set('doc', key);
+        url.hash = '';
+        window.history.replaceState(null, '', url);
+        loadDoc(key);
+      }));
+      document.addEventListener('keydown', event => {
+        if ((event.key === 'ArrowLeft' || event.key === 'ArrowRight') && tabs.includes(document.activeElement)) {
+          event.preventDefault();
+          const next = event.key === 'ArrowRight' ? 1 : -1;
+          const index = tabs.indexOf(document.activeElement);
+          tabs[(index + next + tabs.length) % tabs.length].focus();
+          tabs[(index + next + tabs.length) % tabs.length].click();
+        }
+      });
+
+      const initialDoc = new URLSearchParams(window.location.search).get('doc');
+      loadDoc(docs[initialDoc] ? initialDoc : 'parameters');
+    })();
+  </script>
+</body>
+</html>
